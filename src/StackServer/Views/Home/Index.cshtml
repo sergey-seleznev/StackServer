@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    
+    <div id="sessionId"></div><br/>
+
+    <input id="pushValue"/>
+    <button id="push">Push</button>
+    <div id="pushResult"></div><br/>
+
+    <button id="pop">Pop</button>
+    <div id="popResult"></div><br/>
+    
+    <button id="view">View</button>
+    <div id="viewResult"></div>
+
+</div>
+
+<script type="text/javascript">
+    
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+              .toString(16)
+              .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+          s4() + '-' + s4() + s4() + s4();
+    }
+
+    var sessionId = guid();
+    var serverUrl = "http://localhost:33274/api";
+
+    $("#sessionId").html('Session id: <br>' + sessionId);
+
+    $("#push").on("click", function () {
+        var value = $("#pushValue")[0].value;
+        var url = serverUrl + "/push?id=" + sessionId + "&value=" + value;
+        $.get(url, function () {
+            $("#pushResult").html("Pushed " + value);
+        });
+    });
+
+    $("#pop").on("click", function () {
+        var url = serverUrl + "/pop?id=" + sessionId;
+        $.get(url, function (data) {
+            $("#popResult").html(
+                (typeof data != "undefined") ?
+                    "Popped: " + data :
+                    "Stack is empty");
+        });
+    });
+
+    $("#view").on("click", function () {
+        var url = serverUrl + "/view?id=" + sessionId;
+        $.get(url, function (data) {
+            $("#viewResult").html("View: [" + data.join() + "]");
+        });
+    });
+
+</script>
